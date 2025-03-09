@@ -1,23 +1,33 @@
 #include <Wire.h>
+#include <pins_arduino.h>
 #include "lanesensor.h"
 #include "MatrixOrbitali2c.h"
-#include "ShiftIn.h"
 
-int buttonLoad = 19;
-int buttonCE = 20;
-int buttonData = 21;
-int buttonClock = 22;
+#define pulseWidth 5
+#define inputWidth 8
+
+#define inputLoad A0
+#define inputCE A1
+#define inputData A2
+#define inputClock A3
+
+#define outputLatch 2
+#define outputClock 3
+#define outputData 4
+
+#define motorRunDelay 3000
 
 LaneSensor _q(10, 25);
 LaneSensor _d(7, 10);
 LaneSensor _n(9, 5);
 LaneSensor _p(8, 1);
-unsigned long elapsed = 0;
-unsigned long RunDelay = 3000;
-ShiftIn<1> shift;
-MatrixOrbitali2c lcd(0x28);
 
-void check(LaneSensor* c) {
+unsigned long elapsed = 0;
+
+MatrixOrbitali2c screen(0x28);
+
+
+void readLaneSesnor(LaneSensor* c) {
   if (c->CheckCount()) {
     elapsed = millis();
     Serial.println(c->String());
@@ -26,44 +36,72 @@ void check(LaneSensor* c) {
 
 void refreshDisplay() {
   size_t err;
-  err = lcd.write(_q.String());
+  err = screen.write(_q.String());
   if (err > 0) {
-    Serial.println("error");
+    // if we can't write to the screen, turn it off and re-initize.  this usally means the cpu came up before the VFD was done booting
+  
     Wire.end();
     delay(10);
-    lcd.begin(4, 20);
+    screen.begin(4, 20);
     return;
   }
 
-  lcd.write(_d.String());
-  lcd.write(_n.String());
-  lcd.write(_p.String());
+  screen.write(_d.String());
+  screen.write(_n.String());
+  screen.write(_p.String());
 }
 
 void setup() {
-  lcd.begin(4, 20);
   Serial.begin(9600);
 
-  shift.begin(buttonLoad, buttonCD, buttonData, buttonClock);
+    // screen.begin(4, 20);
+
+  pinMode(inputLoad, OUTPUT);
+  pinMode(inputCE, OUTPUT);
+  pinMode(inputData, INPUT);
+  pinMode(inputClock, OUTPUT);
+
+  pinMode(outputLatch, OUTPUT);
+  pinMode(outputClock, OUTPUT);
+  pinMode(outputData, OUTPUT);
+}
+
+uint8_t readInput() {
+  uint8_t result;
+  digitalWrite(inputLoad, LOW);
+  delayMicroseconds(pulseWidth);
+  digitalWrite(inputLoad, HIGH);
+  delayMicroseconds(pulseWidth);
+
+  digitalWrite(inputClock, HIGH);
+  digitalWrite(inputCE, LOW);
+  byte incoming = shiftIn(inputData, inputClock, LSBFIRST);
+  digitalWrite(inputCE, HIGH);
+
+  return incoming;
+}
+
+void putOutput(uint8_t data ) {
+  digitalWrite(outputLatch, LOW);
+  shiftOut(outputData, outputClock, LSBFIRST, data);
+  digitalWrite(outputLatch, HIGH);
 }
 
 void loop() {
+  uint8_t input = readInput();
+  //TODO decode input here
+  Serial.println(input, BIN);
 
-  if (shift.update()) {  // read in all values. returns true if any button has changed
-    for (int i = 0; i < shift.getDataWidth(); i++)
-      Serial.print(shift.state(i));  // get state of button i
-    Serial.println();
-  }
+  putOutput(input);
 
-  delay(1);
-  // check(_q);
-  // check(_n);
-  // check(_p);
-  // check(_d);
+  // readLaneSesnor(_q);
+  // readLaneSesnor(_n);
+  // readLaneSesnor(_p);
+  // readLaneSesnor(_d);
 
   // refreshDisplay();
 
-  // if (elapsed > 0 && millis() - elapsed > RunDelay) {
+  // if (elapsed > 0 && millis() - elapsed > motorRunDelay) {
   //   elapsed = 0;
   // }
 }
