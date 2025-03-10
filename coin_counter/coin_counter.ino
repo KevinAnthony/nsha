@@ -10,8 +10,8 @@
 #define DBtnMask 2
 #define NBtnMask 4
 #define PBtnMask 8
-#define UBtnMask 16
-#define DBtnMask 32
+#define UPBtnMask 16
+#define DnBtnMask 32
 #define CtrBtnOutMask 0xFF
 
 #define QSenMask 256
@@ -44,7 +44,7 @@ uint8_t selectedButton;
 MatrixOrbitali2c screen(0x28);
 
 
-void readLaneSesnor(LaneSensor* c) {
+void readLaneSesnor(Coin* c) {
   if (c->CheckCount()) {
     elapsed = millis();
     Serial.println(c->String());
@@ -110,26 +110,17 @@ bool isActive(uint16_t input, uint16_t mask) {
 }
 
 void processInput(uint16_t input) {
-  if isActive (input, QBtnMask) {
-    selectButton = QBtnMask
+  if (isActive(input, QBtnMask)) {
+    selectedButton = QBtnMask;
   }
-  if isActive (input, DBtnMask) {
-    selectButton = DBtnMask
+  if (isActive(input, DBtnMask)) {
+    selectedButton = DBtnMask;
   }
-  if isActive (input, NBtnMask) {
-    selectButton = NBtnMask
+  if (isActive(input, NBtnMask)) {
+    selectedButton = NBtnMask;
   }
-  if isActive (input, QBtnMask) {
-    selectButton = PBtnMask
-  }
-  if isActive (input, UBtnMask) {
-    switch (selectedButton) {
-      QBtnMask:
-        _
-    }
-  }
-  if isActive (input, QBtnMask) {
-    selectButton = PBtnMask
+  if (isActive(input, QBtnMask)) {
+    selectedButton = PBtnMask;
   }
 }
 
@@ -138,7 +129,7 @@ void loop() {
   processInput(input);
   Serial.println(input, BIN);
 
-  putOutput(selectedButton&);
+  putOutput(selectedButton);
 
   // readLaneSesnor(_q);
   // readLaneSesnor(_n);
