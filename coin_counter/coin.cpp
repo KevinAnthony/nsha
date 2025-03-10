@@ -2,34 +2,23 @@
 #include "coin.h"
 #include <math.h>
 
-Coin::Coin(int pin, int value) {
+Coin::Coin(int value, mask uint8_t) {
   _lastState = HIGH;
   _count = 0;
-  _pin = pin;
+
+  _mask = mask;
   _value = value;
 
   pinMode(_pin, INPUT);
   digitalWrite(_pin, HIGH);
 }
 
-bool Coin::CheckCount() {
-  int curState = digitalRead(_pin);
+bool Coin::CheckSesnor(input uint16_t) {
+  bool laneState = (input>>8 & _mask) == _mask;
 
-  if (!curState && _lastState) {
-    Serial.print(curState);
-    Serial.print(" ");
-    Serial.print(_lastState);
-    Serial.print(" ");
-    Serial.println(_count);
-
+  if (!laneState && _lastState) {
     _count++;
     _lastState = curState;
-
-    Serial.print(curState);
-    Serial.print(" ");
-    Serial.print(_lastState);
-    Serial.print(" ");
-    Serial.println(_count);
 
     return true;
   }
@@ -37,6 +26,12 @@ bool Coin::CheckCount() {
   _lastState = curState;
 
   return false;
+}
+
+bool Coin::CheckButton(input uint16_t){
+    bool btnState = (input & _mask) == _mask;
+
+    return false;
 }
 
 char* Coin::String() {
