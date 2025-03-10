@@ -1,10 +1,10 @@
-#ifndef lanesensor_h
-#define lanesensor_h
+#ifndef coin_h
+#define coin_h
 
 #include "Arduino.h" 
-class LaneSensor {
+class Coin {
 public:
-  LaneSensor(int pin, int value);
+  Coin(int pin, int value);
   bool CheckCount();
   char* String();
 private:

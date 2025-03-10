@@ -1,10 +1,25 @@
 #include <Wire.h>
 #include <pins_arduino.h>
-#include "lanesensor.h"
+#include "coin.h"
 #include "MatrixOrbitali2c.h"
 
 #define pulseWidth 5
 #define inputWidth 8
+
+#define QBtnMask 1
+#define DBtnMask 2
+#define NBtnMask 4
+#define PBtnMask 8
+#define UBtnMask 16
+#define DBtnMask 32
+#define CtrBtnOutMask 0xFF
+
+#define QSenMask 256
+#define DSenMask 512
+#define NSenMask 1024
+#define PSenMask 2048
+#define HSenMask 4096
+
 
 #define inputLoad A0
 #define inputCE A1
@@ -17,12 +32,14 @@
 
 #define motorRunDelay 3000
 
-LaneSensor _q(10, 25);
-LaneSensor _d(7, 10);
-LaneSensor _n(9, 5);
-LaneSensor _p(8, 1);
+Coin _q(10, 25);
+Coin _d(7, 10);
+Coin _n(9, 5);
+Coin _p(8, 1);
 
 unsigned long elapsed = 0;
+
+uint8_t selectedButton;
 
 MatrixOrbitali2c screen(0x28);
 
@@ -39,7 +56,7 @@ void refreshDisplay() {
   err = screen.write(_q.String());
   if (err > 0) {
     // if we can't write to the screen, turn it off and re-initize.  this usally means the cpu came up before the VFD was done booting
-  
+
     Wire.end();
     delay(10);
     screen.begin(4, 20);
@@ -54,7 +71,7 @@ void refreshDisplay() {
 void setup() {
   Serial.begin(9600);
 
-    // screen.begin(4, 20);
+  // screen.begin(4, 20);
 
   pinMode(inputLoad, OUTPUT);
   pinMode(inputCE, OUTPUT);
@@ -66,8 +83,8 @@ void setup() {
   pinMode(outputData, OUTPUT);
 }
 
-uint8_t readInput() {
-  uint8_t result;
+uint16_t readInput() {
+  uint16_t result;
   digitalWrite(inputLoad, LOW);
   delayMicroseconds(pulseWidth);
   digitalWrite(inputLoad, HIGH);
@@ -75,24 +92,53 @@ uint8_t readInput() {
 
   digitalWrite(inputClock, HIGH);
   digitalWrite(inputCE, LOW);
-  byte incoming = shiftIn(inputData, inputClock, LSBFIRST);
+  byte button = shiftIn(inputData, inputClock, MSBFIRST);
+  byte sensor = shiftIn(inputData, inputClock, MSBFIRST);
   digitalWrite(inputCE, HIGH);
 
-  return incoming;
+  return sensor << 8 | button;
 }
 
-void putOutput(uint8_t data ) {
+void putOutput(uint8_t data) {
   digitalWrite(outputLatch, LOW);
   shiftOut(outputData, outputClock, LSBFIRST, data);
   digitalWrite(outputLatch, HIGH);
 }
 
+bool isActive(uint16_t input, uint16_t mask) {
+  return (input & mask) == mask;
+}
+
+void processInput(uint16_t input) {
+  if isActive (input, QBtnMask) {
+    selectButton = QBtnMask
+  }
+  if isActive (input, DBtnMask) {
+    selectButton = DBtnMask
+  }
+  if isActive (input, NBtnMask) {
+    selectButton = NBtnMask
+  }
+  if isActive (input, QBtnMask) {
+    selectButton = PBtnMask
+  }
+  if isActive (input, UBtnMask) {
+    switch (selectedButton) {
+      QBtnMask:
+        _
+    }
+  }
+  if isActive (input, QBtnMask) {
+    selectButton = PBtnMask
+  }
+}
+
 void loop() {
   uint8_t input = readInput();
-  //TODO decode input here
+  processInput(input);
   Serial.println(input, BIN);
 
-  putOutput(input);
+  putOutput(selectedButton&);
 
   // readLaneSesnor(_q);
   // readLaneSesnor(_n);

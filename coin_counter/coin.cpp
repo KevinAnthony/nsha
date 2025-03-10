@@ -1,8 +1,8 @@
 #include "Arduino.h"
-#include "lanesensor.h"
+#include "coin.h"
 #include <math.h>
 
-LaneSensor::LaneSensor(int pin, int value) {
+Coin::Coin(int pin, int value) {
   _lastState = HIGH;
   _count = 0;
   _pin = pin;
@@ -12,7 +12,7 @@ LaneSensor::LaneSensor(int pin, int value) {
   digitalWrite(_pin, HIGH);
 }
 
-bool LaneSensor::CheckCount() {
+bool Coin::CheckCount() {
   int curState = digitalRead(_pin);
 
   if (!curState && _lastState) {
@@ -39,7 +39,7 @@ bool LaneSensor::CheckCount() {
   return false;
 }
 
-char* LaneSensor::String() {
+char* Coin::String() {
   double value = (_value * _count) / 100.0;
   double whole, fraction;
 
