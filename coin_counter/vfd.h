@@ -32,6 +32,5 @@
 #endif
 
 class VFD {
-  MatrixOrbitali2c(uint8_t i2cport)
-public:
-   void begin();
+  MatrixOrbitali2c(uint8_t i2cport) public : void begin();
+}

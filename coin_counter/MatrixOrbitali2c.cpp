@@ -25,19 +25,17 @@
 // state when the constructor is called.
 
 
-MatrixOrbitali2c::MatrixOrbitali2c ( uint8_t i2cport)
+MatrixOrbitali2c::MatrixOrbitali2c(uint8_t i2cport)
 
 {
   init(i2cport);
 }
 
-void MatrixOrbitali2c::init(uint8_t i2cport)
-{
+void MatrixOrbitali2c::init(uint8_t i2cport) {
   _i2cport = i2cport;
 }
 
-void MatrixOrbitali2c::begin(uint8_t rows, uint8_t cols)
-{
+void MatrixOrbitali2c::begin(uint8_t rows, uint8_t cols) {
   Wire.begin();
   clear();
   noBlink();
@@ -49,118 +47,98 @@ void MatrixOrbitali2c::begin(uint8_t rows, uint8_t cols)
 
 // High Level Commands
 
-void MatrixOrbitali2c::clear()
-{
+void MatrixOrbitali2c::clear() {
   write(MO_COMMANDCHAR);
   write(MO_CLEARDISPLAY);
 }
 
-void MatrixOrbitali2c::home()
-{
+void MatrixOrbitali2c::home() {
   write(MO_COMMANDCHAR);
   write(MO_HOME);
 }
 
-void MatrixOrbitali2c::autoScroll()
-{
+void MatrixOrbitali2c::autoScroll() {
   write(MO_COMMANDCHAR);
   write(MO_AUTOSCROLLON);
 }
 
-void MatrixOrbitali2c::noAutoScroll()
-{
+void MatrixOrbitali2c::noAutoScroll() {
   write(MO_COMMANDCHAR);
   write(MO_AUTOSCROLLOFF);
 }
 
-void MatrixOrbitali2c::lineWrap()
-{
+void MatrixOrbitali2c::lineWrap() {
   write(MO_COMMANDCHAR);
   write(MO_LINEWRAPON);
 }
 
-void MatrixOrbitali2c::noLineWrap()
-{
+void MatrixOrbitali2c::noLineWrap() {
   write(MO_COMMANDCHAR);
   write(MO_LINEWRAPOFF);
 }
-void MatrixOrbitali2c::cursor()
-{
+void MatrixOrbitali2c::cursor() {
   write(MO_COMMANDCHAR);
   write(MO_CURSORON);
 }
 
-void MatrixOrbitali2c::noCursor()
-{
+void MatrixOrbitali2c::noCursor() {
   write(MO_COMMANDCHAR);
   write(MO_CURSOROFF);
 }
-void MatrixOrbitali2c::blink()
-{
+void MatrixOrbitali2c::blink() {
   write(MO_COMMANDCHAR);
   write(MO_CURSORBLINKON);
 }
 
-void MatrixOrbitali2c::noBlink()
-{
+void MatrixOrbitali2c::noBlink() {
   write(MO_COMMANDCHAR);
   write(MO_CURSORBLINKOFF);
 }
-void MatrixOrbitali2c::cursorLeft()
-{
+void MatrixOrbitali2c::cursorLeft() {
   write(MO_COMMANDCHAR);
   write(MO_CURSORLEFT);
 }
 
-void MatrixOrbitali2c::cursorRight()
-{
+void MatrixOrbitali2c::cursorRight() {
   write(MO_COMMANDCHAR);
   write(MO_CURSORRIGHT);
 }
-void MatrixOrbitali2c::gpioOn()
-{
+void MatrixOrbitali2c::gpioOn() {
   write(MO_COMMANDCHAR);
   write(MO_GPIOON);
 }
 
-void MatrixOrbitali2c::gpioOff()
-{
+void MatrixOrbitali2c::gpioOff() {
   write(MO_COMMANDCHAR);
   write(MO_GPIOOFF);
 }
-void MatrixOrbitali2c::initNarrowVertical()
-{
+void MatrixOrbitali2c::initNarrowVertical() {
   write(MO_COMMANDCHAR);
   write(MO_NARROWVERTICALBAR);
 }
 
-void MatrixOrbitali2c::initWideVertical()
-{
+void MatrixOrbitali2c::initWideVertical() {
   write(MO_COMMANDCHAR);
   write(MO_WIDEVERTICALBAR);
 }
-void MatrixOrbitali2c::initHorizontal()
-{
+void MatrixOrbitali2c::initHorizontal() {
   write(MO_COMMANDCHAR);
   write(MO_HORIZONTALBAR);
 }
 
-void MatrixOrbitali2c::initLargeDigits()
-{
+void MatrixOrbitali2c::initLargeDigits() {
   write(MO_COMMANDCHAR);
   write(MO_INITLARGEDIGITS);
 }
 
-void MatrixOrbitali2c::drawVertical(uint8_t col, uint8_t height)
-{
+void MatrixOrbitali2c::drawVertical(uint8_t col, uint8_t height) {
   write(MO_COMMANDCHAR);
   write(MO_DRAWVERTICALBAR);
   write(col);
   write(height);
 }
 
-void MatrixOrbitali2c::drawHorizontal(uint8_t col, uint8_t row, uint8_t dir, uint8_t length)
-{
+void MatrixOrbitali2c::drawHorizontal(uint8_t col, uint8_t row, uint8_t dir, uint8_t length) {
   write(MO_COMMANDCHAR);
   write(MO_DRAWHORIZONTALBAR);
   write(col);
@@ -169,72 +147,63 @@ void MatrixOrbitali2c::drawHorizontal(uint8_t col, uint8_t row, uint8_t dir, uin
   write(length);
 }
 
-void MatrixOrbitali2c::placeLargeDigit(uint8_t col, uint8_t digit)
-{
+void MatrixOrbitali2c::placeLargeDigit(uint8_t col, uint8_t digit) {
   write(MO_COMMANDCHAR);
   write(MO_PLACELARGEDIGIT);
   write(col);
   write(digit);
 }
 
-void MatrixOrbitali2c::backlightOff()
-{
+void MatrixOrbitali2c::backlightOff() {
   write(MO_COMMANDCHAR);
   write(MO_BACKLIGHTOFF);
 }
 
-void MatrixOrbitali2c::backlightOn()
-{
+void MatrixOrbitali2c::backlightOn() {
   backlightOn(0);
 }
 
-void MatrixOrbitali2c::backlightOn(uint8_t ontime)
-{
+void MatrixOrbitali2c::backlightOn(uint8_t ontime) {
   write(MO_COMMANDCHAR);
   write(MO_BACKLIGHTON);
   write(ontime);
 }
 
-void MatrixOrbitali2c::setContrast(uint8_t contrast)
-{
+void MatrixOrbitali2c::setContrast(uint8_t contrast) {
   write(MO_COMMANDCHAR);
   write(MO_SETCONTRAST);
   write(contrast);
 }
 
-void MatrixOrbitali2c::createChar(uint8_t location, uint8_t charmap[])
-{
-  location &= 0x7; // There are only 8 locations 0-7
+void MatrixOrbitali2c::createChar(uint8_t location, uint8_t charmap[]) {
+  location &= 0x7;  // There are only 8 locations 0-7
   write(MO_COMMANDCHAR);
   write(MO_CUSTOMCHAR);
-  for (int i=0; i<8; i++) {
-   write(charmap[i]);
- }
+  for (int i = 0; i < 8; i++) {
+    write(charmap[i]);
+  }
 }
 
-void MatrixOrbitali2c::setCursor(uint8_t h, uint8_t v)
-{
- write(MO_COMMANDCHAR);
- write(MO_SETCURSORPOS);
- write(h);
- write(v);
+void MatrixOrbitali2c::setCursor(uint8_t h, uint8_t v) {
+  write(MO_COMMANDCHAR);
+  write(MO_SETCURSORPOS);
+  write(h);
+  write(v);
 }
 
 
 // Mid level commands for sending data to the display
 
-inline size_t MatrixOrbitali2c::write(uint8_t value)
-{
+inline size_t MatrixOrbitali2c::write(uint8_t value) {
   Wire.beginTransmission(_i2cport);
   Wire.write(value);
   return Wire.endTransmission();
 }
 
-size_t MatrixOrbitali2c::write(const char *str)
-{
+size_t MatrixOrbitali2c::write(const char *str) {
   Wire.beginTransmission(_i2cport);
   while (*str)
-     Wire.write(*str++);
+    Wire.write(*str++);
   return Wire.endTransmission();
 }
 /*

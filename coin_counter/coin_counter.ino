@@ -10,11 +10,10 @@
 #define DMask 2
 #define NMask 4
 #define PMask 8
-#define UPBtnMask 16
+#define UpBtnMask 16
 #define DnBtnMask 32
 
 #define HSenMask 16
-
 
 #define inputLoad A0
 #define inputCE A1
@@ -26,17 +25,18 @@
 #define outputData 4
 
 #define motorRunDelay 3000
+#define motorPin 6
 
-Coin _q(10, 25);
-Coin _d(7, 10);
-Coin _n(9, 5);
-Coin _p(8, 1);
-Coin _selected;
+Coin _q(25, QMask);
+Coin _d(10, DMask);
+Coin _n(5, NMask);
+Coin _p(1, PMask);
+Coin _selected = _q;
 
-unsigned long _elapsed = 0;
+uint64_t _sensorElapsed = 0;
+uint64_t _resetElapsed = 0;
 
 MatrixOrbitali2c screen(0x28);
-
 
 /**************** INPUT ****************/
 
@@ -51,9 +51,12 @@ uint16_t readInput() {
   digitalWrite(inputCE, LOW);
   byte button = shiftIn(inputData, inputClock, MSBFIRST);
   byte sensor = shiftIn(inputData, inputClock, MSBFIRST);
+  
   digitalWrite(inputCE, HIGH);
 
-  return sensor << 8 | button;
+  result = ~sensor << 8 | button;
+  
+  return result;
 }
 
 void processCoinInput(uint16_t input) {
@@ -72,15 +75,15 @@ void processCoinInput(uint16_t input) {
 
 void readLaneSesnor(Coin c, uint16_t input) {
   if (c.CheckSensor(input)) {
-    _elapsed = millis();
-    Serial.println(c->String());
+    // Turn On Mosfet
+    _sensorElapsed = millis();
   }
 }
 
 void readButton(Coin c, uint16_t input) {
   if (c.CheckButton(input)) {
-    _selected = c
-  })
+    _selected = c;
+  }
 }
 
 /**************** OUTPUT ****************/
@@ -123,21 +126,48 @@ void setup() {
   pinMode(outputLatch, OUTPUT);
   pinMode(outputClock, OUTPUT);
   pinMode(outputData, OUTPUT);
+
+  pinMode(motorPin, OUTPUT);
 }
 
 void loop() {
-  uint8_t input = readInput();
+  Serial.println();
+
+  uint16_t input = readInput();
   processCoinInput(input);
 
-  
+  uint8_t upDownMask = 0 | input & UpBtnMask | input & DnBtnMask;
 
-  Serial.println(input, BIN);
+  if (upDownMask == UpBtnMask) {
+    _selected++;
+  }
 
-  putOutput(selectedButton);
+  if (upDownMask == DnBtnMask) {
+    _selected--;
+  }
 
-  // refreshDisplay();
+  if (_resetElapsed > 0 && upDownMask == 48) {
+    if (millis() - _resetElapsed > ResetPressTime) {
+      _q.Reset();
+      _d.Reset();
+      _n.Reset();
+      _p.Reset();
+    }
+  } else {
+    _resetElapsed = 0;
+  }
 
-  // if (_elapsed > 0 && millis() - _elapsed > motorRunDelay) {
-  //   _elapsed = 0;
-  // }
+  putOutput(_selected.GetMask() | upDownMask);
+
+  delay(1000);
+  refreshDisplay();
+
+  if (_sensorElapsed > 0 && millis() - _sensorElapsed > motorRunDelay) {
+    // Turn off mosfet
+
+    _sensorElapsed = 0;
+  }
+  digitalWrite(motorPin, HIGH);
+  delay(1000);
+  digitalWrite(motorPin, LOW);
 }

@@ -96,8 +96,8 @@ public:
   void setCursor(uint8_t, uint8_t);
   virtual size_t write(uint8_t);
   virtual size_t write(const char *str);
-//  virtual void write(const uint8_t *buffer, size_t size);
-//  void print(const String &);
+  //  virtual void write(const uint8_t *buffer, size_t size);
+  //  void print(const String &);
 
 private:
 
