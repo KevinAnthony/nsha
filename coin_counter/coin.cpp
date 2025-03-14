@@ -57,6 +57,14 @@ char* Coin::String() {
   return _buffer;
 }
 
+uint8_t Coin::Get(){
+  return _count;
+}
+
+void Coin::Set(uint8_t value){
+  _count = value;
+}
+
 Coin& Coin::operator++() {
   _count++;
 
