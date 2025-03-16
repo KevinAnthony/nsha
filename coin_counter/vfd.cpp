@@ -1,8 +1,7 @@
 #include "vfd.h"
 #include <Wire.h>
 
-VFD::VFD(uint8_t i2cport)
-{
+VFD::VFD(uint8_t i2cport) {
   _i2cport = i2cport;
 }
 

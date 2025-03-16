@@ -22,7 +22,7 @@ bool Coin::CheckSensor(uint16_t input) {
   }
 
   _lastState = laneState;
-  
+
   return false;
 }
 
@@ -55,6 +55,14 @@ char* Coin::String() {
   sprintf(_buffer, "0.%02d - % 4d $% 4d.%02d", _value, _count, int(whole), int(fraction));
 
   return _buffer;
+}
+
+uint8_t Coin::Get() {
+  return _count;
+}
+
+void Coin::Set(uint8_t value) {
+  _count = value;
 }
 
 Coin& Coin::operator++() {

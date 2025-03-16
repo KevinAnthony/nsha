@@ -51,11 +51,11 @@ uint16_t readInput() {
   digitalWrite(inputCE, LOW);
   byte button = shiftIn(inputData, inputClock, MSBFIRST);
   byte sensor = shiftIn(inputData, inputClock, MSBFIRST);
-  
+
   digitalWrite(inputCE, HIGH);
 
   result = ~~sensor << 8 | button;
-  
+
   return result;
 }
 
