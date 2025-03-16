@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <pins_arduino.h>
 #include "coin.h"
-#include "MatrixOrbitali2c.h"
+#include "vfd.h"
 
 #define pulseWidth 5
 #define inputWidth 8
@@ -36,7 +36,7 @@ Coin _selected = _q;
 uint64_t _sensorElapsed = 0;
 uint64_t _resetElapsed = 0;
 
-MatrixOrbitali2c screen(0x28);
+VFD screen(0x28);
 
 /**************** INPUT ****************/
 
@@ -54,7 +54,7 @@ uint16_t readInput() {
   
   digitalWrite(inputCE, HIGH);
 
-  result = ~sensor << 8 | button;
+  result = ~~sensor << 8 | button;
   
   return result;
 }
@@ -95,7 +95,7 @@ void refreshDisplay() {
     // if we can't write to the screen, turn it off and re-initize.  this usally means the cpu came up before the VFD was done booting
     Wire.end();
     delay(10);
-    screen.begin(4, 20);
+    screen.begin();
     return;
   }
 
@@ -115,7 +115,7 @@ void putOutput(uint8_t data) {
 void setup() {
   Serial.begin(9600);
 
-  screen.begin(4, 20);
+  screen.begin();
 
   _selected = _q;
   pinMode(inputLoad, OUTPUT);

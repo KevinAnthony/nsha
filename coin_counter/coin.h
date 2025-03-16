@@ -9,7 +9,7 @@ public:
   Coin(int value, uint8_t mask);
   bool CheckSensor(uint16_t input);
   bool CheckButton(uint16_t input);
-  Reset();
+ void Reset();
   char* String();
   uint8_t GetMask();
   //operators

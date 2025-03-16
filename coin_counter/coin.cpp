@@ -43,7 +43,7 @@ uint8_t Coin::GetMask() {
   return _mask;
 }
 
-Coin::Reset() {
+void Coin::Reset() {
   _count = 0;
 }
 
